@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Property Purchasing Readiness & Strategy Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAFAF9;
+    --surface:#FFFFFF;
+    --border:#E3E3E0;
+    --text:#1A1A18;
+    --text-soft:#6B6B65;
+    --accent:#1E4B47;
+    --accent-soft:#E8EFEE;
+    --warn:#B5502C;
+    --warn-soft:#FBEDE7;
+    --total:#8A5A16;
+    --total-soft:#FBF1E2;
+  }
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    margin:0;
+    padding:32px 16px 60px;
+  }
+  .wrap{max-width:980px;margin:0 auto;}
+  nav{display:flex;gap:12px;margin-bottom:24px;}
+  nav a{
+    font-size:13px;
+    font-weight:600;
+    padding:8px 14px;
+    border-radius:6px;
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--text-soft);
+    text-decoration:none;
+  }
+  nav a.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+  h1{font-size:clamp(22px,3.5vw,28px);font-weight:700;margin:0 0 8px;}
+  .sub{color:var(--text-soft);font-size:14px;margin-bottom:24px;line-height:1.5;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px;margin-bottom:20px;}
+  .card h2{font-size:16px;font-weight:700;margin:0 0 16px;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 26px;}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px 26px;}
+  @media (max-width:680px){.grid,.grid3{grid-template-columns:1fr;}}
+  .field label{display:block;font-size:12px;font-weight:600;color:var(--text-soft);text-transform:uppercase;margin-bottom:6px;}
+  .inputwrap{display:flex;align-items:center;border:1px solid var(--border);border-radius:7px;background:#FCFCFB;overflow:hidden;}
+  .inputwrap .prefix,.inputwrap .suffix{font-family:'JetBrains Mono',monospace;font-size:13.5px;color:var(--text-soft);padding:0 10px;}
+  input[type=text], input[type=number]{width:100%;border:none;background:transparent;font-family:'JetBrains Mono',monospace;font-size:15px;padding:10px;}
+  input:focus{outline:none;}
+  .inputwrap:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+  .result-box{background:var(--accent-soft);border:1px solid var(--accent);border-radius:8px;padding:18px;margin-top:16px;}
+  .result-title{font-size:15px;font-weight:700;color:var(--accent);margin-bottom:6px;}
+  .result-desc{font-size:13.5px;line-height:1.6;color:var(--text);}
+  .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px;}
+  @media (max-width:680px){.stat-grid{grid-template-columns:1fr;}}
+  .stat{border:1px solid var(--border);background:#FCFCFB;padding:12px 14px;border-radius:8px;}
+  .stat-label{font-size:11px;text-transform:uppercase;color:var(--text-soft);font-weight:600;}
+  .stat-val{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;margin-top:4px;}
+  .advice-card{background:var(--total-soft);border:1px solid var(--total);border-radius:8px;padding:16px;margin-top:16px;}
+  .advice-card h3{margin:0 0 8px;font-size:14px;color:var(--total);}
+  .advice-card p{margin:0;font-size:13px;line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <a href="index.html">Home Loan Calculator</a>
+    <a href="affordability.html" class="active">Readiness &amp; Strategy</a>
+    <a href="networth.html">Net Worth Tracker</a>
+  </nav>
+
+  <h1>Property Purchase Readiness &amp; Strategy</h1>
+  <div class="sub">Determine the target age for buying your home based on the rule that upfront cash costs stay within 60–70% of your liquid savings.</div>
+
+  <!-- INPUTS -->
+  <div class="card">
+    <h2>1. Financial Baseline &amp; Growth Assumptions</h2>
+    <div class="grid3">
+      <div class="field">
+        <label>Current Age</label>
+        <div class="inputwrap"><input type="number" id="curAge" value="27" min="18" max="70" oninput="calculate()"></div>
+      </div>
+      <div class="field">
+        <label>Current Monthly Income</label>
+        <div class="inputwrap"><span class="prefix">RM</span><input type="text" id="inc" value="8,000" oninput="fmtInp(this); calculate()"></div>
+      </div>
+      <div class="field">
+        <label>Expected Annual Bonus</label>
+        <div class="inputwrap"><span class="prefix">RM</span><input type="text" id="bonus" value="16,000" oninput="fmtInp(this); calculate()"></div>
+      </div>
+      <div class="field">
+        <label>Annual Salary Growth</label>
+        <div class="inputwrap"><input type="number" id="growth" value="4.0" step="0.5" oninput="calculate()"><span class="suffix">%</span></div>
+      </div>
+      <div class="field">
+        <label>Current Liquid Savings</label>
+        <div class="inputwrap"><span class="prefix">RM</span><input type="text" id="savings" value="60,000" oninput="fmtInp(this); calculate()"></div>
+      </div>
+      <div class="field">
+        <label>Monthly Savings Rate</label>
+        <div class="inputwrap"><input type="number" id="saveRate" value="35" min="0" max="100" oninput="calculate()"><span class="suffix">%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>2. Property &amp; Renovation Targets</h2>
+    <div class="grid3">
+      <div class="field">
+        <label>Target Property Price</label>
+        <div class="inputwrap"><span class="prefix">RM</span><input type="text" id="propPrice" value="600,000" oninput="fmtInp(this); calculate()"></div>
+      </div>
+      <div class="field">
+        <label>Down Payment</label>
+        <div class="inputwrap"><input type="number" id="downPct" value="10" oninput="calculate()"><span class="suffix">%</span></div>
+      </div>
+      <div class="field">
+        <label>Renovation Budget</label>
+        <div class="inputwrap"><input type="number" id="renovPct" value="10" oninput="calculate()"><span class="suffix">%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OUTPUTS -->
+  <div class="card">
+    <h2>Readiness Timeline &amp; Cost Breakdown</h2>
+    <div class="stat-grid">
+      <div class="stat"><div class="stat-label">Upfront Cash (Down + Legal)</div><div class="stat-val" id="outUpfront">RM0</div></div>
+      <div class="stat"><div class="stat-label">Renovation Cost</div><div class="stat-val" id="outRenov">RM0</div></div>
+      <div class="stat"><div class="stat-label">Total Out-of-Pocket Needed</div><div class="stat-val" id="outTotalCash" style="color:var(--accent);">RM0</div></div>
+    </div>
+
+    <div class="result-box">
+      <div class="result-title" id="outReadinessTitle">Calculating readiness...</div>
+      <div class="result-desc" id="outReadinessDesc">--</div>
+    </div>
+
+    <div class="advice-card">
+      <h3>Prepayment &amp; Refinancing Guidance</h3>
+      <p id="outRefiAdvice">--</p>
+    </div>
+  </div>
+</div>
+
+<script>
+function raw(str){ return +String(str).replace(/[^0-9.]/g,'') || 0; }
+function fmt(n){ return 'RM' + Math.round(n).toLocaleString('en-US'); }
+function fmtInp(el){
+  let d = el.value.replace(/[^0-9]/g,'');
+  el.value = d ? (+d).toLocaleString('en-US') : '';
+}
+
+function calcLegalAndStamp(price, loan){
+  // Simplified legal & MOT estimation
+  let mot = price * 0.03 - 2000; // Tiered estimation
+  if(mot < 0) mot = 0;
+  let loanStamp = loan * 0.005;
+  let legalFees = (price * 0.01) + (loan * 0.01) + 2000;
+  return mot + loanStamp + legalFees;
+}
+
+function calculate(){
+  const curAge = +document.getElementById('curAge').value;
+  let monthlyInc = raw(document.getElementById('inc').value);
+  let bonus = raw(document.getElementById('bonus').value);
+  const growth = +document.getElementById('growth').value / 100;
+  let savings = raw(document.getElementById('savings').value);
+  const saveRate = +document.getElementById('saveRate').value / 100;
+
+  const propPrice = raw(document.getElementById('propPrice').value);
+  const downPct = +document.getElementById('downPct').value / 100;
+  const renovPct = +document.getElementById('renovPct').value / 100;
+
+  const downPayment = propPrice * downPct;
+  const loanAmount = propPrice - downPayment;
+  const renovCost = propPrice * renovPct;
+  const legalAndStamp = calcLegalAndStamp(propPrice, loanAmount);
+  
+  // Upfront cash needed = Down Payment + Legal/Stamp Fees
+  const upfrontPurchaseCosts = downPayment + legalAndStamp;
+  // Total cash needed = Upfront Purchase Costs + Renovation
+  const totalOutPocketNeeded = upfrontPurchaseCosts + renovCost;
+
+  document.getElementById('outUpfront').textContent = fmt(upfrontPurchaseCosts);
+  document.getElementById('outRenov').textContent = fmt(renovCost);
+  document.getElementById('outTotalCash').textContent = fmt(totalOutPocketNeeded);
+
+  // Target liquid savings needed so that totalOutPocketNeeded is 65% of liquid savings
+  const targetSavingsNeeded = totalOutPocketNeeded / 0.65;
+
+  let year = 0;
+  let accumulatedSavings = savings;
+  let tempInc = monthlyInc;
+
+  while(accumulatedSavings < targetSavingsNeeded && year < 35){
+    let annualSaved = (tempInc * 12 * saveRate) + bonus;
+    accumulatedSavings += annualSaved;
+    tempInc *= (1 + growth);
+    year++;
+  }
+
+  const readyAge = curAge + year;
+  const remSavings = accumulatedSavings - totalOutPocketNeeded;
+
+  const titleEl = document.getElementById('outReadinessTitle');
+  const descEl = document.getElementById('outReadinessDesc');
+
+  if(year === 0){
+    titleEl.textContent = `Ready Now (Age ${curAge})`;
+    descEl.innerHTML = `Your liquid savings (${fmt(savings)}) currently cover the required total cash outlay (${fmt(totalOutPocketNeeded)}) while leaving at least 35% as a liquidity safety net. Remaining liquid cushion: <b>${fmt(savings - totalOutPocketNeeded)}</b>.`;
+  } else if(readyAge <= 65){
+    titleEl.textContent = `Target Purchase Age: ${readyAge} (in ${year} year${year>1?'s':''})`;
+    descEl.innerHTML = `Based on a ${growth*100}% annual income growth and a ${saveRate*100}% savings rate, you will reach the required target savings of <b>${fmt(targetSavingsNeeded)}</b> by age <b>${readyAge}</b>.<br>After paying total costs (${fmt(totalOutPocketNeeded)}), you will preserve approximately <b>${fmt(remSavings)}</b> in liquid reserves.`;
+  } else {
+    titleEl.textContent = `Target Unreachable Before Age 65`;
+    descEl.textContent = `Consider increasing your savings rate, targeting a lower property price, or adjusting renovation expectations.`;
+  }
+
+  // Prepayment & Refinancing Guidance
+  document.getElementById('outRefiAdvice').innerHTML = `
+    <b>When to consider Partial Prepayment:</b> If your mortgage rate exceeds guaranteed investment returns (e.g., FD or low-risk yields) and you have accumulated excess savings above your 6-month emergency buffer, making lump-sum capital payments directly reduces your principal balance and cuts long-term interest drastically.<br><br>
+    <b>When to consider Refinancing:</b> Monitor prevailing interest rates every 3–5 years (especially after lock-in periods expire). Refinancing is advantageous if market rates drop by 0.50%–0.75% p.a. or if your credit score improves enough to secure lower spreads.
+  `;
+}
+
+calculate();
+</script>
+</body>
+</html>
