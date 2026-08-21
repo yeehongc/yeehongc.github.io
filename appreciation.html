@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property True Cost &amp; Appreciation Analysis — Malaysia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+
+  <nav>
+    <a href="index.html">Home Loan Calculator</a>
+    <a href="affordability.html">Readiness &amp; Strategy</a>
+    <a href="networth.html">Net Worth &amp; Retirement</a>
+    <a href="appreciation.html" class="active">Property &amp; Appreciation</a>
+  </nav>
+
+  <h1>Property True Cost &amp; Appreciation Analysis</h1>
+  <div class="sub">Compare your total all-in cash outlay (principal, loan interest, legal fees, and entry costs) against the projected market valuation at the age you finish paying off the mortgage.</div>
+
+  <!-- INPUT PARAMETERS -->
+  <div class="card">
+    <h2>1. Property, Loan &amp; Growth Assumptions</h2>
+
+    <div class="grid3" style="margin-bottom:18px;">
+      <div class="field">
+        <label>Current Age</label>
+        <div class="inputwrap"><input type="number" id="age" value="27" min="18" max="75" step="1" oninput="onInput()"><span class="suffix">yrs</span></div>
+      </div>
+      <div class="field">
+        <label>Target Property Price</label>
+        <div class="inputwrap"><span class="prefix">RM</span><input type="text" id="targetPrice" value="800,000" inputmode="numeric" oninput="onMoneyInput(this); onInput()"></div>
+      </div>
+      <div class="field">
+        <label>Down Payment</label>
+        <div class="inputwrap"><input type="number" id="dp" value="10" min="0" max="90" step="1" oninput="onInput()"><span class="suffix">%</span></div>
+      </div>
+    </div>
+
+    <div class="grid3" style="margin-bottom:18px;">
+      <div class="field">
+        <label>Interest Rate (p.a.)</label>
+        <div class="inputwrap"><input type="number" id="rate" value="4.00" min="0" max="15" step="0.05" oninput="onInput()"><span class="suffix">%</span></div>
+      </div>
+      <div class="field">
+        <label>Loan Tenure</label>
+        <div class="inputwrap"><input type="number" id="duration" value="30" min="1" max="35" step="1" oninput="onInput()"><span class="suffix">yrs</span></div>
+      </div>
+      <div class="field">
+        <label>Annual Appreciation Rate</label>
+        <div class="inputwrap"><input type="number" id="appreciationRate" value="3.5" min="0" max="15" step="0.1" oninput="onInput()"><span class="suffix">% p.a.</span></div>
+      </div>
+    </div>
+
+    <div class="grid3">
+      <div class="field">
+        <label>EPF Account 2 Withdrawal</label>
+        <div class="inputwrap"><span class="prefix">RM</span><input type="text" id="epfAmt" value="30,000" inputmode="numeric" oninput="onMoneyInput(this); onInput()"></div>
+      </div>
+      <div class="field">
+        <label>Renovation Budget</label>
+        <div class="inputwrap"><input type="number" id="renovationPct" value="10" min="0" max="50" step="1" oninput="onInput()"><span class="suffix">%</span></div>
+      </div>
+      <div class="field">
+        <label>Buyer Status</label>
+        <select id="citizenStatus" onchange="onInput()">
+          <option value="citizen">Malaysian citizen / PR</option>
+          <option value="foreigner">Foreigner</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- OUTPUT STATS -->
+  <div class="card">
+    <h2>2. True Outlay vs. Appreciated Valuation</h2>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">Total Outlay (Loan + Interest + Entry Cash)</div>
+        <div class="stat-value" id="outTotalAllInCost" style="color:var(--total);">RM0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label" id="lblAppreciatedVal">Valuation at Payoff Age</div>
+        <div class="stat-value" id="outAppreciatedVal">RM0</div>
+      </div>
+      <div class="stat" style="border-color:var(--accent);">
+        <div class="stat-label">Net Projected Equity Gain</div>
+        <div class="stat-value" id="outNetGain" style="color:var(--accent);">RM0</div>
+      </div>
+    </div>
+
+    <div class="status-box" id="appreciationStatusBox"></div>
+  </div>
+
+  <footer>Built for general reference only — not financial advice.</footer>
+</div>
+
+<script src="appreciation.js"></script>
+</body>
+</html>
