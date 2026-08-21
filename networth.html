@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Net Worth &amp; Retirement Planner — Malaysia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+
+  <nav>
+    <a href="index.html">Home Loan Calculator</a>
+    <a href="affordability.html">Readiness &amp; Strategy</a>
+    <a href="networth.html" class="active">Net Worth &amp; Retirement</a>
+  </nav>
+
+  <h1>Net Worth &amp; Retirement Planner</h1>
+  <div class="sub">Project your total net worth (EPF + Cash Savings) by target age, and determine when you reach Financial Independence using 25x annual expenses.</div>
+
+  <!-- INPUT PARAMETERS -->
+  <div class="card">
+    <h2>1. Income, Savings &amp; Bonus Assumptions</h2>
+
+    <div class="grid3" style="margin-bottom:18px;">
+      <div class="field">
+        <label>Current Age</label>
+        <div class="inputwrap"><input type="number" id="currentAge" value="27" min="18" max="75" step="1" oninput="onInput()"><span class="suffix">yrs</span></div>
+      </div>
+      <div class="field">
+        <label>Target Projection Age</label>
+        <div class="inputwrap"><input type="number" id="targetAge" value="55" min="20" max="80" step="1" oninput="onInput()"><span class="suffix">yrs</span></div>
+      </div>
+      <div class="field">
+        <label>Gross Monthly Salary</label>
+        <div class="inputwrap"><span class="prefix">RM</span><input type="text" id="monthlySalary" value="8,000" inputmode="numeric" oninput="onMoneyInput(this); onInput()"></div>
+      </div>
+    </div>
+
+    <div class="grid3" style="margin-bottom:18px;">
+      <div class="field">
+        <label>Monthly Savings Rate</label>
+        <div class="inputwrap"><input type="number" id="monthlySavingsPct" value="30" min="0" max="90" step="1" oninput="onInput()"><span class="suffix">% salary</span></div>
+      </div>
+      <div class="field">
+        <label>Annual Bonus Received</label>
+        <div class="inputwrap"><input type="number" id="annualBonusMonths" value="2.0" min="0" max="12" step="0.5" oninput="onInput()"><span class="suffix">months</span></div>
+      </div>
+      <div class="field">
+        <label>Bonus Allocated as Savings</label>
+        <div class="inputwrap"><input type="number" id="bonusSavedPct" value="70" min="0" max="100" step="1" oninput="onInput()"><span class="suffix">% bonus</span></div>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-bottom:18px;">
+      <div class="field">
+        <label>Annual Salary Increment</label>
+        <div class="inputwrap"><input type="number" id="salaryIncrement" value="5.0" min="0" max="20" step="0.5" oninput="onInput()"><span class="suffix">% p.a.</span></div>
+      </div>
+      <div class="field">
+        <label>Liquid Cash Return Rate</label>
+        <div class="inputwrap"><input type="number" id="cashReturnRate" value="3.5" min="0" max="15" step="0.1" oninput="onInput()"><span class="suffix">% p.a.</span></div>
+        <div class="hint">Yield on money market funds, fixed deposits, or investments.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>2. EPF &amp; Retirement Benchmark Settings</h2>
+
+    <div class="grid3" style="margin-bottom:18px;">
+      <div class="field">
+        <label>Current EPF Balance</label>
+        <div class="inputwrap"><span class="prefix">RM</span><input type="text" id="currentEpf" value="60,000" inputmode="numeric" oninput="onMoneyInput(this); onInput()"></div>
+      </div>
+      <div class="field">
+        <label>Current Liquid Cash Savings</label>
+        <div class="inputwrap"><span class="prefix">RM</span><input type="text" id="currentCash" value="95,000" inputmode="numeric" oninput="onMoneyInput(this); onInput()"></div>
+      </div>
+      <div class="field">
+        <label>Estimated EPF Dividend Rate</label>
+        <div class="inputwrap"><input type="number" id="epfDividend" value="5.5" min="0" max="10" step="0.1" oninput="onInput()"><span class="suffix">% p.a.</span></div>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-bottom:18px;">
+      <div class="field">
+        <label>EPF Employee Contribution</label>
+        <div class="inputwrap"><input type="number" id="epfEmployeePct" value="11" min="0" max="20" step="1" oninput="onInput()"><span class="suffix">%</span></div>
+      </div>
+      <div class="field">
+        <label>EPF Employer Contribution</label>
+        <div class="inputwrap"><input type="number" id="epfEmployerPct" value="12" min="0" max="20" step="1" oninput="onInput()"><span class="suffix">%</span></div>
+        <div class="hint">Statutory: 13% for salary ≤ RM5,000; 12% for salary > RM5,000.</div>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-bottom:12px;">
+      <div class="field">
+        <label>Estimated Monthly Retirement Expenses</label>
+        <div class="inputwrap"><span class="prefix">RM</span><input type="text" id="retirementExpense" value="5,000" inputmode="numeric" oninput="onMoneyInput(this); onInput()"></div>
+        <div class="hint" id="hintAnnualExpense">Annual expense: RM60,000/year</div>
+      </div>
+      <div class="field">
+        <label>Retirement Rule Target (25x Rule)</label>
+        <div class="inputwrap"><span class="prefix">RM</span><input type="text" id="targetFireAmount" value="1,500,000" readonly style="background:#E8EFEE;"></div>
+        <div class="hint">25 × Annual Expenses (4% safe withdrawal rate).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OUTPUT STATS -->
+  <div class="card">
+    <h2>3. Net Worth &amp; Retirement Results</h2>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label" id="lblEpfTarget">EPF Balance at Age 55</div>
+        <div class="stat-value" id="outEpfTotal">RM0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label" id="lblCashTarget">Cash &amp; Liquid Investments</div>
+        <div class="stat-value" id="outCashTotal">RM0</div>
+      </div>
+      <div class="stat" style="border-color:var(--accent);">
+        <div class="stat-label" id="lblNetWorthTarget">Total Projected Net Worth</div>
+        <div class="stat-value" id="outNetWorthTotal" style="color:var(--accent);">RM0</div>
+      </div>
+    </div>
+
+    <div class="status-box" id="fireStatusBox"></div>
+  </div>
+
+  <footer>Built for general reference only — not financial advice.</footer>
+</div>
+
+<script src="networth.js"></script>
+</body>
+</html>

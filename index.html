@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Malaysia Home Loan & Cash-to-Purchase Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+
+  <nav>
+    <a href="index.html" class="active">Home Loan Calculator</a>
+    <a href="affordability.html">Readiness &amp; Strategy</a>
+    <a href="networth.html">Net Worth &amp; Retirement</a>
+  </nav>
+
+  <h1>Malaysia Home Loan &amp; Cash-to-Purchase Calculator</h1>
+  <div class="sub">Work out your monthly repayment.</div>
+
+  <!-- SHARED INPUTS -->
+  <div class="card">
+
+    <div class="tabs">
+      <button class="tab active" id="tabForward" onclick="setMode('forward')">I know the property price</button>
+      <button class="tab" id="tabReverse" onclick="setMode('reverse')">I know what I can afford monthly</button>
+    </div>
+
+    <div class="grid" style="margin-bottom:18px;">
+      <div class="field" id="priceField">
+        <label>Property price</label>
+        <div class="inputwrap"><span class="prefix">RM</span><input type="text" id="price" value="800,000" inputmode="numeric" oninput="onMoneyInput(this); onInput()"></div>
+      </div>
+      <div class="field" id="repayField" style="display:none;">
+        <label>Monthly repayment you can afford</label>
+        <div class="inputwrap"><span class="prefix">RM</span><input type="text" id="affordRepay" value="3,000" inputmode="numeric" oninput="onMoneyInput(this); onInput()"></div>
+      </div>
+
+      <div class="field">
+        <label>Down payment</label>
+        <div class="inputwrap"><input type="number" id="dp" value="10" min="0" max="90" step="1" oninput="onInput()"><span class="suffix">%</span></div>
+        <div class="hint">Loan amount = property price × (100% − down payment %)</div>
+      </div>
+    </div>
+
+       <div class="grid" style="margin-bottom:18px;">
+      <div class="field">
+        <label>EPF Account 2 Withdrawal for Down Payment</label>
+        <div class="inputwrap"><span class="prefix">RM</span><input type="text" id="epfWithdrawal" value="30,000" inputmode="numeric" oninput="onMoneyInput(this); onInput()"></div>
+        <div class="hint">Reduces upfront personal liquid cash required.</div>
+      </div>
+      <div class="field">
+        <label>Renovation Budget Allocation</label>
+        <div class="inputwrap"><input type="number" id="renovationPct" value="10" min="0" max="50" step="1" oninput="onInput()"><span class="suffix">% of property</span></div>
+        <div class="hint" id="hintRenoRm">RM80,000 total renovation budget</div>
+      </div>
+    </div>
+
+    <div class="grid3" style="margin-bottom:18px;">
+      <div class="field">
+        <label>Interest rate (p.a.)</label>
+        <div class="inputwrap"><input type="number" id="rate" value="4.00" min="0" max="15" step="0.05" oninput="onInput()"><span class="suffix">%</span></div>
+      </div>
+      <div class="field">
+        <label>Loan tenure</label>
+        <div class="inputwrap"><input type="number" id="duration" value="30" min="1" max="35" step="1" oninput="onInput()"><span class="suffix">yrs</span></div>
+      </div>
+      <div class="field">
+        <label>Your age</label>
+        <div class="inputwrap"><input type="number" id="age" value="30" min="18" max="75" step="1" oninput="onInput()"></div>
+        <div class="warn-note" id="tenureWarn" style="display:none;"></div>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-bottom:16px;">
+      <div class="field">
+        <label>Annual income (optional)</label>
+        <div class="inputwrap"><span class="prefix">RM</span><input type="text" id="income" value="96,000" inputmode="numeric" oninput="onMoneyInput(this); onInput()"></div>
+        <div class="hint">Used only to gauge how comfortable the repayment is.</div>
+      </div>
+      <div class="field">
+        <label>Buyer status</label>
+        <select id="citizenStatus" onchange="onInput()">
+          <option value="citizen">Malaysian citizen / PR</option>
+          <option value="foreigner">Foreigner</option>
+        </select>
+        <div class="hint">Foreigners pay a flat 8% MOT stamp duty from 1 Jan 2026, vs the tiered citizen rate.</div>
+      </div>
+    </div>
+
+    <div class="checkrow">
+      <input type="checkbox" id="firstTimer" onchange="onInput()">
+      <div>
+        <div class="clabel">First-time Malaysian homebuyer, property ≤ RM500,000</div>
+        <div class="cdesc">Full exemption on MOT and loan agreement stamp duty, extended to SPAs executed up to 31 Dec 2027 (Budget 2026). Citizens only.</div>
+      </div>
+    </div>
+    <div class="checkrow">
+      <input type="checkbox" id="sameLawyer" checked onchange="onInput()">
+      <div>
+        <div class="clabel">Same law firm handles both SPA and loan agreement</div>
+        <div class="cdesc">Common practice — many firms give roughly a 50% discount on the loan agreement legal fee when done concurrently with the SPA.</div>
+      </div>
+    </div>
+    <div class="checkrow">
+      <input type="checkbox" id="valuationWaived" onchange="onInput()">
+      <div>
+        <div class="clabel">Bank is waiving / absorbing the valuation fee</div>
+        <div class="cdesc">Many banks cover this for financed purchases. Leave unchecked if you're paying it, or buying in cash.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPAYMENT OUTPUT -->
+  <div class="card">
+    <h2>Monthly repayment</h2>
+    <div class="card-sub">Standard amortising-loan formula.</div>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-label">Principal (loan amount)</div><div class="stat-value" id="outPrincipal">RM0</div></div>
+      <div class="stat"><div class="stat-label">Total interest over loan</div><div class="stat-value" id="outInterest">RM0</div></div>
+      <div class="stat" style="border-color:var(--accent);"><div class="stat-label" id="outMonthlyLabel">Monthly repayment</div><div class="stat-value" id="outMonthly" style="color:var(--accent);">RM0</div></div>
+    </div>
+
+    <div class="stat" id="reversePriceStat" style="display:none;margin-bottom:16px;">
+      <div class="stat-label">Property price this repayment supports</div>
+      <div class="stat-value" id="outPrice">RM0</div>
+    </div>
+
+    <div class="afford" id="affordBox"></div>
+
+    <!--
+    <div class="formula-title">How it's worked out</div>
+    <div class="formula-line" id="f1"></div>
+    <div class="formula-line" id="f2"></div>
+    <div class="formula-line" id="f3"></div>
+    <div class="formula-line" id="f4"></div>
+    -->
+
+  </div>
+
+  <!-- TOTAL CASH NEEDED -->
+  <div class="card">
+    <h2>Total cash needed to complete the purchase</h2>
+    <div class="card-sub">Down payment plus every upfront government charge and fee — the amount you'll actually need in hand.</div>
+
+    <table class="breakdown">
+      <thead>
+        <tr><th>Item</th><th style="text-align:right;">Amount</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div class="item-name">Down payment</div><div class="item-desc" id="descDp">Property price × 10%</div></td>
+          <td class="item-value" id="valDp">RM0</td>
+        </tr>
+        <tr>
+	<tr>
+          <td><div class="item-name" style="color: #2F6B4F;">Less: EPF Account 2 Withdrawal</div><div class="item-desc">Subtracted directly from down payment cash needed</div></td>
+          <td class="item-value" id="valEpf" style="color: #2F6B4F;">-RM0</td>
+        </tr>
+	<tr>
+          <td><div class="item-name">Renovation Budget Allocation</div><div class="item-desc" id="descReno">Property price × Renovation %</div></td>
+          <td class="item-value" id="valReno">RM0</td>
+        </tr>
+          <td><div class="item-name" id="nameMot">MOT stamp duty</div><div class="item-desc" id="descMot">Tiered 1% / 2% / 3% / 4% on property price</div></td>
+          <td class="item-value" id="valMot">RM0</td>
+        </tr>
+        <tr>
+          <td><div class="item-name" id="nameLoanDuty">Loan agreement stamp duty</div><div class="item-desc">Flat 0.5% of the loan amount</div></td>
+          <td class="item-value" id="valLoanDuty">RM0</td>
+        </tr>
+        <tr>
+          <td><div class="item-name">Legal fee — SPA</div><div class="item-desc">SRO 2023 scale: 1.25% first RM500k, 1% thereafter (min RM500)</div></td>
+          <td class="item-value" id="valLegalSpa">RM0</td>
+        </tr>
+        <tr>
+          <td><div class="item-name">SST on SPA legal fee</div><div class="item-desc">8% service tax</div></td>
+          <td class="item-value" id="valLegalSpaSst">RM0</td>
+        </tr>
+        <tr>
+          <td><div class="item-name">Legal fee — loan agreement</div><div class="item-desc" id="descLegalLoan">Same scale, applied to the loan amount</div></td>
+          <td class="item-value" id="valLegalLoan">RM0</td>
+        </tr>
+        <tr>
+          <td><div class="item-name">SST on loan legal fee</div><div class="item-desc">8% service tax</div></td>
+          <td class="item-value" id="valLegalLoanSst">RM0</td>
+        </tr>
+        <tr>
+          <td><div class="item-name">Disbursements &amp; reimbursements</div><div class="item-desc">Searches, registration, stamping admin, courier — editable</div></td>
+          <td class="editable-cell"><div class="inputwrap" style="display:inline-flex;width:130px;"><span class="prefix">RM</span><input type="text" id="disb" value="1,200" inputmode="numeric" oninput="onMoneyInput(this); onInput()"></div></td>
+        </tr>
+        <tr>
+          <td><div class="item-name">Valuation fee</div><div class="item-desc" id="descVal">Typical scale: 0.25% / 0.20% / 0.167% / 0.125% by value band (min RM300)</div></td>
+          <td class="item-value" id="valVal">RM0</td>
+        </tr>
+        <tr>
+          <td><div class="item-name">SST on valuation fee</div><div class="item-desc">8% service tax</div></td>
+          <td class="item-value" id="valValSst">RM0</td>
+        </tr>
+        <tr>
+          <td><div class="item-name">Bank processing / facility fee</div><div class="item-desc">Often RM0 — many banks waive this. Editable</div></td>
+          <td class="editable-cell"><div class="inputwrap" style="display:inline-flex;width:130px;"><span class="prefix">RM</span><input type="text" id="bankFee" value="0" inputmode="numeric" oninput="onMoneyInput(this); onInput()"></div></td>
+        </tr>
+        <tr class="total-row">
+          <td>Total cash required</td>
+          <td class="item-value" id="valTotal">RM0</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="formula-title">Rates used (2026)</div>
+    <table class="breakdown">
+      <thead>
+        <tr><th>Charge</th><th>Rate / formula</th><th>Basis</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="item-name">MOT stamp duty</td><td>1% / 2% / 3% / 4% tiered on RM100k / RM500k / RM1m bands (citizens &amp; PRs); flat 8% (foreigners)</td><td class="item-desc">Stamp Act 1949, Finance Act 2025, from 1 Jan 2026</td></tr>
+        <tr><td class="item-name">Loan agreement stamp duty</td><td>Flat 0.5% of loan amount</td><td class="item-desc">Stamp Act 1949</td></tr>
+        <tr><td class="item-name">First-time buyer exemption</td><td>100% off MOT + loan stamp duty, property ≤ RM500,000</td><td class="item-desc">Budget 2026, SPAs to 31 Dec 2027</td></tr>
+        <tr><td class="item-name">Legal fee (SPA &amp; loan)</td><td>1.25% first RM500,000, 1% next RM500,000–RM7.5m, min RM500</td><td class="item-desc">Solicitors' Remuneration Order 2023</td></tr>
+        <tr><td class="item-name">SST on legal &amp; valuation fees</td><td>8%</td><td class="item-desc">Service Tax Act 2018 (current rate)</td></tr>
+        <tr><td class="item-name">Valuation fee</td><td>0.25% / 0.20% / 0.167% / 0.125% by value band, min RM300</td><td class="item-desc">Typical Board of Valuers market scale</td></tr>
+      </tbody>
+    </table>
+
+    <div class="refs">
+      Estimate for planning purposes only — actual figures vary by lawyer, bank and state, and rates change with each Budget. Confirm final figures with your conveyancing lawyer and bank.
+    </div>
+  </div>
+
+  <footer>Built for general reference only — not financial or legal advice.</footer>
+</div>
+
+<script src="calculator.js"></script>
+</body>
+</html>

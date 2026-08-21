@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Readiness &amp; Strategy — Malaysia Home Loan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+
+  <nav>
+    <a href="index.html">Home Loan Calculator</a>
+    <a href="affordability.html" class="active">Readiness &amp; Strategy</a>
+    <a href="networth.html">Net Worth &amp; Retirement</a>
+  </nav>
+
+  <h1>Readiness &amp; Buying Strategy</h1>
+  <div class="sub">Plan your target buying age based on monthly savings capacity (% of income), annual salary growth, and your custom cash deployment threshold.</div>
+
+  <!-- INPUTS -->
+  <div class="card">
+    <h2>Financial Profile &amp; Growth Assumptions</h2>
+    <div class="card-sub">Set your baseline income, savings rate, and annual increment to project purchase timeline.</div>
+
+    <div class="grid" style="margin-bottom:18px;">
+      <div class="field">
+        <label>Current Age</label>
+        <div class="inputwrap"><input type="number" id="currentAge" value="27" min="18" max="70" step="1" oninput="onInput()"><span class="suffix">yrs</span></div>
+      </div>
+      <div class="field">
+        <label>Target Property Price</label>
+        <div class="inputwrap"><span class="prefix">RM</span><input type="text" id="targetPrice" value="800,000" inputmode="numeric" oninput="onMoneyInput(this); onInput()"></div>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-bottom:18px;">
+      <div class="field">
+        <label>EPF Account 2 Available for Withdrawal</label>
+        <div class="inputwrap"><span class="prefix">RM</span><input type="text" id="epfAmt" value="30,000" inputmode="numeric" oninput="onMoneyInput(this); onInput()"></div>
+      </div>
+      <div class="field">
+        <label>Renovation Budget Allocation</label>
+        <div class="inputwrap"><input type="number" id="renovationPct" value="10" min="0" max="50" step="1" oninput="onInput()"><span class="suffix">% of property</span></div>
+	<div class="guideline-box">
+        💡 <b>5-8%</b> 	  for cosmetic / basic (paint, minor fixes, light fittings).<br>
+        💡 <b>10-15%</b>  for moderate (kitchen/bathroom upgrades, flooring, built-ins).<br>
+        💡 <b>15-25+%</b> for full/high-end renovation.
+      </div>
+        <div class="hint" id="hintRenoRm">RM80,000 renovation budget</div>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-bottom:18px;">
+      <div class="field">
+        <label>Gross Monthly Income</label>
+        <div class="inputwrap"><span class="prefix">RM</span><input type="text" id="monthlyIncome" value="8,000" inputmode="numeric" oninput="onMoneyInput(this); onInput()"></div>
+      </div>
+      <div class="field">
+        <label>Annual Salary Increment</label>
+        <div class="inputwrap"><input type="number" id="annualIncrement" value="5.0" min="0" max="30" step="0.5" oninput="onInput()"><span class="suffix">% p.a.</span></div>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-bottom:18px;">
+      <div class="field">
+        <label>Monthly Savings Capacity</label>
+        <div class="inputwrap"><input type="number" id="savingsPct" value="30" min="0" max="90" step="1" oninput="onInput()"><span class="suffix">% of income</span></div>
+        <div class="hint" id="hintSavingsRm">RM2,400/mo initial savings capacity</div>
+      </div>
+      <div class="field">
+        <label>Current Liquid Cash &amp; Savings</label>
+        <div class="inputwrap"><span class="prefix">RM</span><input type="text" id="currentSavings" value="95,000" inputmode="numeric" oninput="onMoneyInput(this); onInput()"></div>
+      </div>
+    </div>
+
+    <div class="grid3" style="margin-bottom:18px;">
+      <div class="field">
+        <label>Planned Down Payment</label>
+        <div class="inputwrap"><input type="number" id="dp" value="10" min="0" max="90" step="1" oninput="onInput()"><span class="suffix">%</span></div>
+      </div>
+      <div class="field">
+        <label>Max Cash-to-Savings Limit</label>
+        <div class="inputwrap"><input type="number" id="safetyThresholdPct" value="70" min="10" max="100" step="1" oninput="onInput()"><span class="suffix">%</span></div>
+        <div class="guideline-box">
+          💡 <b>Recommended Guideline:</b> Keeping entry costs within <b>60%–70%</b> of total liquid savings ensures you retain a <b>30%–40% emergency cushion</b> after closing.
+        </div>
+      </div>
+      <div class="field">
+        <label>Existing Debt Commitments</label>
+        <div class="inputwrap"><span class="prefix">RM</span><input type="text" id="existingDebt" value="1,200" inputmode="numeric" oninput="onMoneyInput(this); onInput()"></div>
+      </div>
+    </div>
+
+    <div class="grid3" style="margin-bottom:18px;">
+      <div class="field">
+        <label>Buyer Status</label>
+        <select id="citizenStatus" onchange="onInput()">
+          <option value="citizen">Malaysian citizen / PR</option>
+          <option value="foreigner">Foreigner</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Interest Rate (p.a.)</label>
+        <div class="inputwrap"><input type="number" id="rate" value="4.00" min="0" max="15" step="0.05" oninput="onInput()"><span class="suffix">%</span></div>
+      </div>
+      <div class="field">
+        <label>Loan Tenure</label>
+        <div class="inputwrap"><input type="number" id="duration" value="30" min="1" max="35" step="1" oninput="onInput()"><span class="suffix">yrs</span></div>
+      </div>
+    </div>
+
+    <div class="checkrow">
+      <input type="checkbox" id="firstTimer" onchange="onInput()">
+      <div>
+        <div class="clabel">First-time Malaysian homebuyer, property ≤ RM500,000</div>
+        <div class="cdesc">Full exemption on MOT and loan agreement stamp duty.</div>
+      </div>
+    </div>
+    <div class="checkrow">
+      <input type="checkbox" id="sameLawyer" checked onchange="onInput()">
+      <div>
+        <div class="clabel">Same law firm handles both SPA and loan agreement</div>
+      </div>
+    </div>
+    <div class="checkrow">
+      <input type="checkbox" id="valuationWaived" onchange="onInput()">
+      <div>
+        <div class="clabel">Bank waiving / absorbing valuation fee</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMELINE & AGE PROJECTION -->
+  <div class="card">
+    <h2>1. Target Purchase Age &amp; Savings Cushion</h2>
+    <div class="card-sub">Projects exact age when your accumulated savings allow total purchase costs to meet your deployment limit.</div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">Total Entry Cash Needed</div>
+        <div class="stat-value" id="outTotalCash" style="color:var(--total);">RM0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Target Savings Needed</div>
+        <div class="stat-value" id="outTargetSavings">RM0</div>
+      </div>
+      <div class="stat" style="border-color:var(--accent);">
+        <div class="stat-label">Projected Ready Age</div>
+        <div class="stat-value" id="outReadyAge" style="color:var(--accent);">--</div>
+      </div>
+    </div>
+
+    <div class="status-box" id="timelineStatusBox"></div>
+  </div>
+
+  <!-- BANK APPROVAL (DSR) -->
+  <div class="card">
+    <h2>2. Bank Approval Readiness (DSR Analysis)</h2>
+    <div class="card-sub">Assesses mortgage debt service ratio against current income.</div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">Est. New Monthly Installment</div>
+        <div class="stat-value" id="outMonthlyInstallment">RM0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Total Monthly Commitment</div>
+        <div class="stat-value" id="outTotalCommitment">RM0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Current DSR</div>
+        <div class="stat-value" id="outDSR">0%</div>
+      </div>
+    </div>
+
+    <div class="status-box" id="dsrStatusBox"></div>
+  </div>
+
+  <footer>Built for general reference only — not financial advice.</footer>
+</div>
+
+<script src="affordability.js"></script>
+</body>
+</html>
